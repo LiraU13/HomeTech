@@ -70,4 +70,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-Developed by [LiraU13](https://github.com/LiraU13)
+Developed by Ulises Moredia Lira [LiraU13](https://github.com/LiraU13)

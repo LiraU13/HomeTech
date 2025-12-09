@@ -109,9 +109,9 @@
         pointer-events: none;
         transform: translateX(-20px);
         transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
-      
+
       .sidebar.collapsed ~ .stage .expand-trigger {
         opacity: 1;
         pointer-events: auto;
@@ -180,7 +180,6 @@
         border-top: 1px solid var(--border);
         padding-top: 1.5rem;
       }
-
 
       /* Device Frame CSS */
       .device-container {
@@ -319,7 +318,8 @@
       }
       /* Mobile/Tablet: Native View (No Frame) */
       @media (max-width: 1024px) {
-        .sidebar, .expand-trigger {
+        .sidebar,
+        .expand-trigger {
           display: none !important;
         }
 
@@ -365,9 +365,22 @@
           <small class="text-muted-small">Mobile Preview</small>
         </div>
         <div style="flex: 1"></div>
-        <button class="toggle-btn" onclick="toggleSidebar()" title="Ocultar menú">
+        <button
+          class="toggle-btn"
+          onclick="toggleSidebar()"
+          title="Ocultar menú"
+        >
           <!-- Chevron Left Icon (SVG) -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
@@ -406,8 +419,13 @@
           oninput="setScale(this.value)"
           title="Ajustar escala del dispositivo"
         />
-        <div style="text-align: right; font-size: 0.8rem; margin-top: 5px;">
-           <button onclick="autoFit()" style="padding: 4px 8px; font-size: 0.7rem;">Auto-Fit</button>
+        <div style="text-align: right; font-size: 0.8rem; margin-top: 5px">
+          <button
+            onclick="autoFit()"
+            style="padding: 4px 8px; font-size: 0.7rem"
+          >
+            Auto-Fit
+          </button>
         </div>
       </div>
 
@@ -424,11 +442,24 @@
     <!-- MAIN STAGE -->
     <div class="stage" id="stageArea">
       <!-- Floating Expand Button -->
-      <button class="expand-trigger" onclick="toggleSidebar()" title="Mostrar menú">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+      <button
+        class="expand-trigger"
+        onclick="toggleSidebar()"
+        title="Mostrar menú"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
       </button>
 
@@ -464,9 +495,9 @@
       let isLandscape = false;
 
       function toggleSidebar() {
-        sidebar.classList.toggle('collapsed');
+        sidebar.classList.toggle("collapsed");
         // Re-run autofit after animation
-        setTimeout(autoFit, 450); 
+        setTimeout(autoFit, 450);
       }
 
       selector.addEventListener("change", (e) => {
@@ -493,7 +524,7 @@
           deviceFrame.style.width = config.w;
           deviceFrame.style.height = config.h;
         }
-        
+
         // Auto-fit after update
         setTimeout(autoFit, 100);
       }
@@ -507,12 +538,22 @@
 
         // CHECK IF MOBILE/NATIVE MODE
         if (window.innerWidth <= 1024) {
-             // Disable scaling logic for native feel
-             deviceFrame.style.transform = 'none';
-             deviceFrame.style.width = '100vw';
-             deviceFrame.style.height = '100vh';
-             if (scaleRange) scaleRange.value = 1;
-             return;
+          // Disable scaling logic for native feel
+          deviceFrame.style.transform = "none";
+          deviceFrame.style.width = "100vw";
+          deviceFrame.style.height = "100vh";
+          if (scaleRange) scaleRange.value = 1;
+          return;
+        }
+
+        // DESKTOP MODE: Reset dimensions to config
+        const config = sizes[currentDevice];
+        if (isLandscape) {
+          deviceFrame.style.width = config.h;
+          deviceFrame.style.height = config.w;
+        } else {
+          deviceFrame.style.width = config.w;
+          deviceFrame.style.height = config.h;
         }
 
         const stageW = stage.clientWidth;
@@ -522,32 +563,32 @@
 
         // Add some padding
         const padding = 40;
-        
+
         const scaleW = (stageW - padding) / deviceW;
         const scaleH = (stageH - padding) / deviceH;
 
         // Use the smaller scale to fit both dimensions
         let scale = Math.min(scaleW, scaleH);
-        
+
         // Cap at 1.0 if it's already big enough? No, allow zoom in if screen is huge?
         // Usually we want to fit, so if it's smaller, don't zoom in excessively.
         // But for "Auto-Fit" typically implies fitting *into* view.
         // Let's cap at 1.2 to avoid blurring, but allow shrinking.
         if (scale > 1.2) scale = 1.2;
-        
+
         // Apply
         setScale(scale);
-        
+
         // Update slider UI
         if (scaleRange) {
-            scaleRange.value = scale;
+          scaleRange.value = scale;
         }
       }
 
       // Initial auto-fit
-      window.addEventListener('resize', autoFit);
-      window.addEventListener('load', () => {
-         setTimeout(autoFit, 500); // Wait for layout
+      window.addEventListener("resize", autoFit);
+      window.addEventListener("load", () => {
+        setTimeout(autoFit, 500); // Wait for layout
       });
     </script>
 
