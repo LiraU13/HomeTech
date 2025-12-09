@@ -10,8 +10,8 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="hometech" />
-    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
+    <link rel="icon" type="image/png" href="logo.png" />
 
     <title>HomeTech | Mobile Portfolio Demo</title>
     <link rel="manifest" href="manifest.json" />
@@ -56,6 +56,24 @@
         overflow: hidden;
       }
 
+      /* Toggle Button Styles */
+      .toggle-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, color 0.2s;
+      }
+      .toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+      }
+
       /* Sidebar controls */
       .sidebar {
         width: 320px;
@@ -67,6 +85,37 @@
         gap: 2rem;
         z-index: 10;
         box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
+        transition: margin-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        margin-left: 0;
+      }
+
+      .sidebar.collapsed {
+        margin-left: -320px;
+      }
+
+      /* Floating Expand Button (visible when sidebar is closed) */
+      .expand-trigger {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 50;
+        background: var(--sidebar-bg);
+        border: 1px solid var(--border);
+        padding: 10px;
+        border-radius: 8px;
+        color: var(--text-main);
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-20px);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+      
+      .sidebar.collapsed ~ .stage .expand-trigger {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
       }
 
       .brand {
@@ -132,27 +181,6 @@
         padding-top: 1.5rem;
       }
 
-      /* Stage area for the device */
-      .stage {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        background-image: radial-gradient(
-            circle at 10% 20%,
-            rgba(88, 166, 255, 0.05) 0%,
-            transparent 20%
-          ),
-          radial-gradient(
-            circle at 90% 80%,
-            rgba(163, 113, 247, 0.05) 0%,
-            transparent 20%
-          );
-        transition: background-color 0.3s;
-        overflow: auto;
-        padding: 2rem;
-      }
 
       /* Device Frame CSS */
       .device-container {
@@ -224,7 +252,7 @@
 
       @keyframes spin {
         100% {
-          transform: translate(-50%, -50%) rotate(360deg);
+          transform: rotate(360deg);
         }
       }
 
@@ -254,22 +282,100 @@
       .landscape .device-container {
         /* Width and Height swapped in JS, but rotation visual helper */
       }
+      /* Add these helper classes for previously inline styles */
+      .text-muted-small {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+      .flex-gap-10 {
+        display: flex;
+        gap: 10px;
+      }
+      .flex-1 {
+        flex: 1;
+      }
+      .opacity-70 {
+        opacity: 0.7;
+      }
+      /* Update stage for auto-fit */
+      .stage {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(88, 166, 255, 0.05) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(163, 113, 247, 0.05) 0%,
+            transparent 20%
+          );
+        overflow: hidden; /* Hide scrollbars for auto-fit */
+        padding: 0;
+      }
+      /* Mobile/Tablet: Native View (No Frame) */
+      @media (max-width: 1024px) {
+        .sidebar, .expand-trigger {
+          display: none !important;
+        }
+
+        body {
+          flex-direction: column;
+        }
+
+        .stage {
+          padding: 0 !important;
+          background: #000 !important; /* Or app background */
+        }
+
+        .device-container {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          box-shadow: none !important;
+          border: none !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          transition: none !important;
+          /* Reset transform handled in JS, but force here just in case */
+        }
+
+        .device-screen {
+          border-radius: 0 !important;
+        }
+
+        .notch {
+          display: none !important;
+        }
+      }
     </style>
   </head>
   <body>
     <!-- SIDEBAR UI -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="brand">
         <img src="logo.png" width="40" height="40" alt="Logo" />
         <div>
           <h1>HomeTech</h1>
-          <small style="color: var(--text-muted)">Mobile Preview</small>
+          <small class="text-muted-small">Mobile Preview</small>
         </div>
+        <div style="flex: 1"></div>
+        <button class="toggle-btn" onclick="toggleSidebar()" title="Ocultar menú">
+          <!-- Chevron Left Icon (SVG) -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
       </div>
 
       <div class="control-group">
-        <label>Dispositivo</label>
-        <select id="deviceSelector">
+        <label for="deviceSelector">Dispositivo</label>
+        <select id="deviceSelector" title="Seleccionar dispositivo">
           <option value="iphone">iPhone 14 Pro Max</option>
           <option value="pixel">Pixel 7</option>
           <option value="tablet">iPad Mini</option>
@@ -278,26 +384,31 @@
 
       <div class="control-group">
         <label>Orientación</label>
-        <div style="display: flex; gap: 10px">
-          <button onclick="setOrientation('portrait')" style="flex: 1">
+        <div class="flex-gap-10">
+          <button onclick="setOrientation('portrait')" class="flex-1">
             Vertical
           </button>
-          <button onclick="setOrientation('landscape')" style="flex: 1">
+          <button onclick="setOrientation('landscape')" class="flex-1">
             Horizontal
           </button>
         </div>
       </div>
 
       <div class="control-group">
-        <label>Escala</label>
+        <label for="scaleRange">Escala</label>
         <input
+          id="scaleRange"
           type="range"
           min="0.5"
           max="1.5"
-          step="0.1"
+          step="0.01"
           value="1"
           oninput="setScale(this.value)"
+          title="Ajustar escala del dispositivo"
         />
+        <div style="text-align: right; font-size: 0.8rem; margin-top: 5px;">
+           <button onclick="autoFit()" style="padding: 4px 8px; font-size: 0.7rem;">Auto-Fit</button>
+        </div>
       </div>
 
       <div class="description">
@@ -306,12 +417,21 @@
           Esta preview permite interactuar con la versión móvil de la aplicación
           directamente desde el navegador, simulando un entorno nativo.
         </p>
-        <p style="font-size: 0.8rem; opacity: 0.7">Powered by Flutter Web</p>
+        <p class="text-muted-small opacity-70">Powered by Flutter Web</p>
       </div>
     </div>
 
     <!-- MAIN STAGE -->
-    <div class="stage">
+    <div class="stage" id="stageArea">
+      <!-- Floating Expand Button -->
+      <button class="expand-trigger" onclick="toggleSidebar()" title="Mostrar menú">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
       <div class="device-container" id="deviceFrame">
         <div class="notch"></div>
         <div class="device-screen">
@@ -330,15 +450,24 @@
     <script>
       const deviceFrame = document.getElementById("deviceFrame");
       const selector = document.getElementById("deviceSelector");
+      const stage = document.getElementById("stageArea");
+      const scaleRange = document.getElementById("scaleRange");
+      const sidebar = document.getElementById("sidebar");
 
       const sizes = {
         iphone: { w: "430px", h: "932px", class: "" }, // iPhone 14 Pro Max
         pixel: { w: "412px", h: "915px", class: "device-pixel" },
-        tablet: { w: "768px", h: "1024px", class: "device-tablet" }, // iPad Mini ish
+        tablet: { w: "768px", h: "1024px", class: "device-tablet" },
       };
 
       let currentDevice = "iphone";
       let isLandscape = false;
+
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        // Re-run autofit after animation
+        setTimeout(autoFit, 450); 
+      }
 
       selector.addEventListener("change", (e) => {
         currentDevice = e.target.value;
@@ -360,17 +489,66 @@
         if (isLandscape) {
           deviceFrame.style.width = config.h;
           deviceFrame.style.height = config.w;
-          // In pixel/iphone landscape, notch position might look weird,
-          // strictly simpler to just rotate dimensions for demo.
         } else {
           deviceFrame.style.width = config.w;
           deviceFrame.style.height = config.h;
         }
+        
+        // Auto-fit after update
+        setTimeout(autoFit, 100);
       }
 
       function setScale(val) {
         deviceFrame.style.transform = `scale(${val})`;
       }
+
+      function autoFit() {
+        if (!stage || !deviceFrame) return;
+
+        // CHECK IF MOBILE/NATIVE MODE
+        if (window.innerWidth <= 1024) {
+             // Disable scaling logic for native feel
+             deviceFrame.style.transform = 'none';
+             deviceFrame.style.width = '100vw';
+             deviceFrame.style.height = '100vh';
+             if (scaleRange) scaleRange.value = 1;
+             return;
+        }
+
+        const stageW = stage.clientWidth;
+        const stageH = stage.clientHeight;
+        const deviceW = deviceFrame.offsetWidth;
+        const deviceH = deviceFrame.offsetHeight;
+
+        // Add some padding
+        const padding = 40;
+        
+        const scaleW = (stageW - padding) / deviceW;
+        const scaleH = (stageH - padding) / deviceH;
+
+        // Use the smaller scale to fit both dimensions
+        let scale = Math.min(scaleW, scaleH);
+        
+        // Cap at 1.0 if it's already big enough? No, allow zoom in if screen is huge?
+        // Usually we want to fit, so if it's smaller, don't zoom in excessively.
+        // But for "Auto-Fit" typically implies fitting *into* view.
+        // Let's cap at 1.2 to avoid blurring, but allow shrinking.
+        if (scale > 1.2) scale = 1.2;
+        
+        // Apply
+        setScale(scale);
+        
+        // Update slider UI
+        if (scaleRange) {
+            scaleRange.value = scale;
+        }
+      }
+
+      // Initial auto-fit
+      window.addEventListener('resize', autoFit);
+      window.addEventListener('load', () => {
+         setTimeout(autoFit, 500); // Wait for layout
+      });
     </script>
 
     <!-- FLUTTER INITIALIZATION -->
