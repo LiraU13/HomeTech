@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hometech/screens/home/devices_screen.dart';
 import 'package:hometech/widgets/routes.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
+import 'dart:async';
 import 'package:hometech/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +25,50 @@ class _HomeScreenState extends State<HomeScreen> {
   // Sensores
   bool switch3 = false;
   bool switch3N = false;
+
+  late ValueNotifier<double> motorNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    motorNotifier = ValueNotifier(0.0);
+    if (!AppConfig.isDemoMode) {
+      _databaseReference = FirebaseDatabase.instance.ref();
+      _loadStateofSandS();
+      _loadNotifications();
+    } else {
+      _loadPreferences();
+    }
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      switch1 = prefs.getBool('Devices/Lights/Main_room/state') ?? false;
+      slider1 =
+          (prefs.getInt('Devices/Lights/Main_room/intensity') ?? 0).toDouble();
+      switch2 = prefs.getBool('Devices/Motors/Garage/state') ?? false;
+      switch3 = prefs.getBool('Devices/Sensors/Movement/state') ?? false;
+      switch3N = prefs.getBool('Notifications/Movement') ?? false;
+    });
+  }
+
+  Future<void> _savePreference(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      await prefs.setBool(key, value);
+    } else if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is double) {
+      await prefs.setInt(key, value.toInt());
+    }
+  }
+
+  @override
+  void dispose() {
+    motorNotifier.dispose();
+    super.dispose();
+  }
 
   int selectedIndex = 0;
   List screens = const [
@@ -102,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const DevicesScreen(initialIndex: 1),
+                                    const DevicesScreen(initialIndex: 0),
                               ),
                             );
                           },
@@ -188,77 +234,77 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              Container(
-                padding: const EdgeInsets.fromLTRB(15, 5, 15, 20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.100),
-                      blurRadius: 10,
-                    )
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Cámaras',
-                          style: GoogleFonts.poppins(
-                              fontSize: 18, fontWeight: FontWeight.w300),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_circle_right,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const DevicesScreen(initialIndex: 0),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.fullscreen),
-                          onPressed: () {
-                            // maximizar pantalla
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.broadcast_on_home_rounded),
-                          onPressed: () {
-                            // transmitir
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: () {
-                            // cambiar de camara
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward),
-                          onPressed: () {
-                            // cambiar de camara
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              // const SizedBox(height: 40),
+              // Container(
+              //   padding: const EdgeInsets.fromLTRB(15, 5, 15, 20),
+              //   decoration: BoxDecoration(
+              //     color: Theme.of(context).colorScheme.tertiaryContainer,
+              //     borderRadius: BorderRadius.circular(10),
+              //     boxShadow: [
+              //       BoxShadow(
+              //         color: Colors.black.withOpacity(0.100),
+              //         blurRadius: 10,
+              //       )
+              //     ],
+              //   ),
+              //   child: Column(
+              //     children: [
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             'Cámaras',
+              //             style: GoogleFonts.poppins(
+              //                 fontSize: 18, fontWeight: FontWeight.w300),
+              //           ),
+              //           IconButton(
+              //             icon: const Icon(
+              //               Icons.arrow_circle_right,
+              //             ),
+              //             onPressed: () {
+              //               Navigator.push(
+              //                 context,
+              //                 MaterialPageRoute(
+              //                   builder: (context) =>
+              //                       const DevicesScreen(initialIndex: 0),
+              //                 ),
+              //               );
+              //             },
+              //           ),
+              //         ],
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           IconButton(
+              //             icon: const Icon(Icons.fullscreen),
+              //             onPressed: () {
+              //               // maximizar pantalla
+              //             },
+              //           ),
+              //           IconButton(
+              //             icon: const Icon(Icons.broadcast_on_home_rounded),
+              //             onPressed: () {
+              //               // transmitir
+              //             },
+              //           ),
+              //           IconButton(
+              //             icon: const Icon(Icons.arrow_back),
+              //             onPressed: () {
+              //               // cambiar de camara
+              //             },
+              //           ),
+              //           IconButton(
+              //             icon: const Icon(Icons.arrow_forward),
+              //             onPressed: () {
+              //               // cambiar de camara
+              //             },
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(height: 40),
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 5, 15, 20),
@@ -289,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const DevicesScreen(initialIndex: 2),
+                                    const DevicesScreen(initialIndex: 1),
                               ),
                             );
                           },
@@ -333,6 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       setState(() {
                                         switch2 = value;
                                       });
+                                      _simulateMotorProgress();
                                       _stateSwitchMotor('Garage', value);
                                     },
                                     activeColor:
@@ -351,17 +398,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: GoogleFonts.poppins(fontSize: 15)),
                                 const SizedBox(width: 30),
                                 SimpleCircularProgressBar(
-                                  valueNotifier: null,
+                                  valueNotifier: motorNotifier,
                                   mergeMode: true,
                                   size: 60.0,
                                   progressStrokeWidth: 10.0,
                                   onGetText: (double value) {
                                     return Text(
                                       '${value.toInt()}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
-                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary,
                                       ),
                                     );
                                   },
@@ -405,7 +454,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const DevicesScreen(initialIndex: 3),
+                                    const DevicesScreen(initialIndex: 2),
                               ),
                             );
                           },
@@ -524,16 +573,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if (!AppConfig.isDemoMode) {
-      _databaseReference = FirebaseDatabase.instance.ref();
-      _loadStateofSandS();
-      _loadNotifications();
-    }
-  }
-
   void _loadNotifications() {
     _databaseReference.child('Notifications/Movement').onValue.listen(
       (event) {
@@ -546,7 +585,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _notificationSwitch(String section, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference(section, value);
+      return;
+    }
     _databaseReference.child(section).set(value);
   }
 
@@ -592,7 +634,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stateSwitchLight(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Lights')
@@ -602,7 +647,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stateSliderLight(String roomName, double value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/intensity', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Lights')
@@ -612,7 +660,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stateSwitchMotor(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Motors/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Motors')
@@ -622,12 +673,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stateSwitchSensor(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Sensors/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Sensors')
         .child(roomName)
         .child('state')
         .set(value ? true : false);
+  }
+
+  void _simulateMotorProgress() {
+    motorNotifier.value = 0.0;
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      if (motorNotifier.value >= 100) {
+        timer.cancel();
+      } else {
+        motorNotifier.value += 2; // Adjust speed as needed
+      }
+    });
   }
 }

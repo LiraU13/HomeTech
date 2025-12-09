@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hometech/screens/home/devices/cameras_screen.dart';
+// import 'package:hometech/screens/home/devices/cameras_screen.dart';
 import 'package:hometech/screens/home/devices/lights_screen.dart';
 import 'package:hometech/screens/home/devices/motors_screen.dart';
 import 'package:hometech/screens/home/devices/sensors_screen.dart';
@@ -23,7 +23,7 @@ class _DevicesScreenState extends State<DevicesScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 4, vsync: this, initialIndex: widget.initialIndex);
+        length: 3, vsync: this, initialIndex: widget.initialIndex);
   }
 
   @override
@@ -61,7 +61,7 @@ class _DevicesScreenState extends State<DevicesScreen>
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: DefaultTabController(
-        length: 4,
+        length: 3,
         child: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -85,7 +85,7 @@ class _DevicesScreenState extends State<DevicesScreen>
                   indicatorColor: Theme.of(context).colorScheme.onPrimary,
                   controller: _tabController,
                   tabs: const [
-                    Tab(text: 'Cámaras'),
+                    // Tab(text: 'Cámaras'),
                     Tab(text: 'Luces'),
                     Tab(text: 'Motores'),
                     Tab(text: 'Sensores'),
@@ -97,7 +97,7 @@ class _DevicesScreenState extends State<DevicesScreen>
           body: TabBarView(
             controller: _tabController,
             children: const [
-              CamerasScreen(),
+              // CamerasScreen(),
               LightsScreen(),
               MotorsScreen(),
               SensorsScreen(),

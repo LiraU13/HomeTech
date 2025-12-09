@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:hometech/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LightsScreen extends StatefulWidget {
   const LightsScreen({super.key});
@@ -618,6 +619,35 @@ class _LightsScreenState extends State<LightsScreen> {
     if (!AppConfig.isDemoMode) {
       _databaseReference = FirebaseDatabase.instance.ref();
       _loadStateofSandS();
+    } else {
+      _loadPreferences();
+    }
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      switch1 = prefs.getBool('Devices/Lights/Main_room/state') ?? false;
+      slider1 =
+          (prefs.getInt('Devices/Lights/Main_room/intensity') ?? 0).toDouble();
+      switch2 = prefs.getBool('Devices/Lights/Room_1/state') ?? false;
+      slider2 =
+          (prefs.getInt('Devices/Lights/Room_1/intensity') ?? 0).toDouble();
+      switch3 = prefs.getBool('Devices/Lights/Room_2/state') ?? false;
+      slider3 =
+          (prefs.getInt('Devices/Lights/Room_2/intensity') ?? 0).toDouble();
+      switch4 = prefs.getBool('Devices/Lights/Parking/alwaysOn') ?? false;
+    });
+  }
+
+  Future<void> _savePreference(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      await prefs.setBool(key, value);
+    } else if (value is int) {
+      await prefs.setInt(key, value);
+    } else if (value is double) {
+      await prefs.setInt(key, value.toInt());
     }
   }
 
@@ -716,49 +746,70 @@ class _LightsScreenState extends State<LightsScreen> {
   }
 
   void _stateSwitch1(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/state')
         .set(value ? true : false);
   }
 
   void _stateSlider1(String roomName, double value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/intensity', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/intensity')
         .set(value.toInt());
   }
 
   void _stateSwitch2(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/state')
         .set(value ? true : false);
   }
 
   void _stateSlider2(String roomName, double value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/intensity', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/intensity')
         .set(value.toInt());
   }
 
   void _stateSwitch3(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/state')
         .set(value ? true : false);
   }
 
   void _stateSlider3(String roomName, double value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/intensity', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/intensity')
         .set(value.toInt());
   }
 
   void _stateSwitch4(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Lights/$roomName/alwaysOn', value);
+      return;
+    }
     _databaseReference
         .child('Devices/Lights/$roomName/alwaysOn')
         .set(value ? true : false);

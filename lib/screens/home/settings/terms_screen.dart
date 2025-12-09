@@ -48,7 +48,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -58,7 +58,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -68,7 +68,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -78,7 +78,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -88,7 +88,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -98,7 +98,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -108,7 +108,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -118,7 +118,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -128,7 +128,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -138,7 +138,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -148,7 +148,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -158,7 +158,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.justify,
                     ),
@@ -168,7 +168,7 @@ class _TermsScreenState extends State<TermsScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       textAlign: TextAlign.start,
                     ),

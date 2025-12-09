@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -26,7 +27,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final newpasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  // Getter to avoid eager initialization on Web
+  FirebaseAuth get auth => FirebaseAuth.instance;
   String? uid;
   String? name;
   String? number;
@@ -51,6 +53,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   // Obtener los datos de Firestore y de Firebase Auth
   Future<void> getData() async {
+    if (kIsWeb) {
+      setState(() {
+        name = "Usuario Demo";
+        number = "1234567890";
+        email = "demo@hometech.com";
+        nameController.text = name!;
+        numberController.text = number!;
+        emailController.text = email!;
+      });
+      return;
+    }
     try {
       User? user = auth.currentUser;
       if (user != null) {
@@ -146,6 +159,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
     }
 
+    if (kIsWeb) {
+      message('Modo demo: Información actualizada (simulación).');
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.settings);
+      }
+      return;
+    }
+
     // Validar si hay cambios en el correo o el número antes de validar la unicidad
     bool emailChanged = emailController.text.trim() != email;
     bool phoneChanged = numberController.text.trim() != number;
@@ -206,6 +227,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   void resetStates() {
+    if (kIsWeb) return;
     final DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     // LUCES
     // - Switch
@@ -239,6 +261,19 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
+
+    if (kIsWeb) {
+      // Mock delete for web
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) {
+        Navigator.of(context).pop(); // Close dialog
+        Navigator.of(context).pop(); // Close screen
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: ((context) => const MyApp())),
+        );
+      }
+      return;
+    }
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
@@ -291,6 +326,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   // Validar si el correo o el número ya están en uso con otra cuenta
   // Método para verificar si el correo electrónico ya existe
   Future<bool> checkEmailExists(String email) async {
+    if (kIsWeb) return false;
     final QuerySnapshot emailResult = await FirebaseFirestore.instance
         .collection('users')
         .where('email', isEqualTo: email)
@@ -304,6 +340,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   // Método para verificar si el número de teléfono ya existe
   Future<bool> checkPhoneExists(String phone) async {
+    if (kIsWeb) return false;
     final QuerySnapshot phoneResult = await FirebaseFirestore.instance
         .collection('users')
         .where('phone', isEqualTo: phone)
@@ -317,6 +354,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   // Validar si se ha cambiado el correo para enviar la autenticación para el cambio
   Future<void> attemptUpdateEmail(String newEmail) async {
+    if (kIsWeb) return;
     User? user = auth.currentUser;
     if (user != null) {
       if (user.email == newEmail) {
@@ -339,6 +377,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     String oldPassword = oldpasswordController.text.trim();
     String newPassword = newpasswordController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
+
+    if (kIsWeb) return true;
 
     if (newPassword != confirmPassword) {
       warningMessage('La nueva contraseña no coincide con la confirmación.');
@@ -367,7 +407,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         content: Text(
           message,
           style: GoogleFonts.poppins(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
         backgroundColor: ThemeColors.delftBlue,
         duration: const Duration(seconds: 3),
@@ -395,7 +437,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         content: Text(
           message,
           style: GoogleFonts.poppins(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
         backgroundColor: ThemeColors.warningMessage,
         duration: const Duration(seconds: 3),
@@ -525,7 +569,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer
+                              .withOpacity(0.7),
                           blurRadius: 10,
                           offset: const Offset(1, 2),
                         ),
@@ -552,7 +599,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.person,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               style: GoogleFonts.poppins(),
@@ -580,7 +628,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.phone,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               style: GoogleFonts.poppins(),
@@ -605,7 +654,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.email_rounded,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               style: GoogleFonts.poppins(),
@@ -629,7 +679,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.password_rounded,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               obscureText: _obscureText,
@@ -654,7 +705,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.password_rounded,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               obscureText: _obscureText,
@@ -679,13 +731,15 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.password_rounded,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(_obscureText
                                       ? Icons.visibility
                                       : Icons.visibility_off),
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                   onPressed: () {
                                     setState(() {
                                       _obscureText = !_obscureText;
@@ -724,9 +778,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                                 color: Colors.white,
                                 size: 20,
                               ),
-                              () {
-                                deleteAccountAlertDialog();
-                              },
+                              kIsWeb
+                                  ? null
+                                  : () {
+                                      deleteAccountAlertDialog();
+                                    },
                             ),
                           ],
                         ),
@@ -791,22 +847,37 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 8),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: photo != null
-                          ? Image.network(
-                              photo!,
+                      child: kIsWeb
+                          ? Container(
                               width: 130,
                               height: 130,
-                              fit: BoxFit.cover,
-                              alignment: const Alignment(0, 0),
+                              color: Colors.blue,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'U',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 80,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             )
-                          : Image.network(
-                              photo ??
-                                  'https://firebasestorage.googleapis.com/v0/b/hometech-a45da.appspot.com/o/user_images%2Ficon1.png?alt=media&token=618d9980-4d45-42a6-b839-27834cf8af3e',
-                              width: 130,
-                              height: 130,
-                              fit: BoxFit.cover,
-                              alignment: const Alignment(0, 0),
-                            ),
+                          : photo != null
+                              ? Image.network(
+                                  photo!,
+                                  width: 130,
+                                  height: 130,
+                                  fit: BoxFit.cover,
+                                  alignment: const Alignment(0, 0),
+                                )
+                              : Image.network(
+                                  photo ??
+                                      'https://firebasestorage.googleapis.com/v0/b/hometech-a45da.appspot.com/o/user_images%2Ficon1.png?alt=media&token=618d9980-4d45-42a6-b839-27834cf8af3e',
+                                  width: 130,
+                                  height: 130,
+                                  fit: BoxFit.cover,
+                                  alignment: const Alignment(0, 0),
+                                ),
                     ),
                   ),
                 ),

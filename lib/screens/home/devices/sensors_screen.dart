@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hometech/config.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SensorsScreen extends StatefulWidget {
   const SensorsScreen({super.key});
@@ -72,64 +73,68 @@ class _SensorsScreenState extends State<SensorsScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'ON / OFF',
-                                    style: GoogleFonts.poppins(fontSize: 15),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch1M,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch1M = value;
-                                      });
-                                      _stateSwitchM1('Movement', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Notificaciones',
-                                    style: GoogleFonts.poppins(fontSize: 15),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch2MN,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch2MN = value;
-                                      });
-                                      _notificationSwitch(
-                                          'Notifications/Movement', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'ON / OFF',
+                                      style: GoogleFonts.poppins(fontSize: 15),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch1M,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch1M = value;
+                                        });
+                                        _stateSwitchM1('Movement', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Notificaciones',
+                                      style: GoogleFonts.poppins(fontSize: 15),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch2MN,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch2MN = value;
+                                        });
+                                        _notificationSwitch(
+                                            'Notifications/Movement', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -180,63 +185,68 @@ class _SensorsScreenState extends State<SensorsScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  // No debería tener ON/OFF el sensor de gas?
-                                  Text('ON / OFF',
-                                      style: GoogleFonts.poppins(fontSize: 15)),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch1G,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch1G = value;
-                                      });
-                                      _stateSwitchG1('Gas', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Notificaciones',
-                                    style: GoogleFonts.poppins(fontSize: 15),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch2GN,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch2GN = value;
-                                      });
-                                      _notificationSwitch(
-                                          'Notifications/Gas', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    // No debería tener ON/OFF el sensor de gas?
+                                    Text('ON / OFF',
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 15)),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch1G,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch1G = value;
+                                        });
+                                        _stateSwitchG1('Gas', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Notificaciones',
+                                      style: GoogleFonts.poppins(fontSize: 15),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch2GN,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch2GN = value;
+                                        });
+                                        _notificationSwitch(
+                                            'Notifications/Gas', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -287,63 +297,68 @@ class _SensorsScreenState extends State<SensorsScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  // No debería tener ON/OFF el sensor de gas?
-                                  Text('ON / OFF',
-                                      style: GoogleFonts.poppins(fontSize: 15)),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch1P,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch1P = value;
-                                      });
-                                      _stateSwitchP1('Proximity', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Notificaciones',
-                                    style: GoogleFonts.poppins(fontSize: 15),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Switch(
-                                    value: switch2PN,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        switch2PN = value;
-                                      });
-                                      _notificationSwitch(
-                                          'Notifications/Proximity', value);
-                                    },
-                                    activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondary,
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    // No debería tener ON/OFF el sensor de gas?
+                                    Text('ON / OFF',
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 15)),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch1P,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch1P = value;
+                                        });
+                                        _stateSwitchP1('Proximity', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Notificaciones',
+                                      style: GoogleFonts.poppins(fontSize: 15),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Switch(
+                                      value: switch2PN,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          switch2PN = value;
+                                        });
+                                        _notificationSwitch(
+                                            'Notifications/Proximity', value);
+                                      },
+                                      activeColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      activeTrackColor: Colors.indigo.shade400,
+                                      inactiveTrackColor: Colors.transparent,
+                                      inactiveThumbColor: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -378,6 +393,28 @@ class _SensorsScreenState extends State<SensorsScreen> {
       _databaseReference = FirebaseDatabase.instance.ref();
       _loadStateofSandS();
       _loadNotifications();
+    } else {
+      _loadPreferences();
+    }
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      switch1M = prefs.getBool('Devices/Sensors/Movement/state') ?? false;
+      switch1G = prefs.getBool('Devices/Sensors/Gas/state') ?? false;
+      switch1P = prefs.getBool('Devices/Sensors/Proximity/state') ?? false;
+
+      switch2MN = prefs.getBool('Notifications/Movement') ?? false;
+      switch2GN = prefs.getBool('Notifications/Gas') ?? false;
+      switch2PN = prefs.getBool('Notifications/Proximity') ?? false;
+    });
+  }
+
+  Future<void> _savePreference(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      await prefs.setBool(key, value);
     }
   }
 
@@ -411,7 +448,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   }
 
   void _notificationSwitch(String section, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference(section, value);
+      return;
+    }
     _databaseReference.child(section).set(value);
   }
 
@@ -445,7 +485,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   }
 
   void _stateSwitchM1(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Sensors/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Sensors')
@@ -455,7 +498,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   }
 
   void _stateSwitchG1(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Sensors/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Sensors')
@@ -465,7 +511,10 @@ class _SensorsScreenState extends State<SensorsScreen> {
   }
 
   void _stateSwitchP1(String roomName, bool value) {
-    if (AppConfig.isDemoMode) return;
+    if (AppConfig.isDemoMode) {
+      _savePreference('Devices/Sensors/$roomName/state', value);
+      return;
+    }
     _databaseReference
         .child('Devices')
         .child('Sensors')

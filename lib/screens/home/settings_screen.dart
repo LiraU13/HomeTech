@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -34,8 +35,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => selectedIndex = index);
   }
 
-  final FirebaseStorage storage = FirebaseStorage.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  // Getters to avoid initialization on Web unless accessed
+  FirebaseStorage get storage => FirebaseStorage.instance;
+  FirebaseAuth get auth => FirebaseAuth.instance;
   String? uid;
   String? name;
   String? email;
@@ -52,15 +54,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     getData();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      valswitch1 =
-          Provider.of<ThemeProvider>(context, listen: false).themeData ==
-              darkMode;
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   valswitch1 =
+    //       Provider.of<ThemeProvider>(context, listen: false).themeData ==
+    //           darkMode;
+    // });
+    // valswitch1 represents the local state, but we should rely on the Provider's state directly in the build method or init it here.
+    // However, since we want the switch to reflect the CURRENT theme, we can just read it in build.
   }
 
   // Obtener los datos de Firestore y Firebase Auth (IGUAL DATOS DE CUENTAS DE GOOGLE)
   Future<void> getData() async {
+    if (kIsWeb) {
+      setState(() {
+        name = "Usuario Demo";
+        email = "demo@hometech.com";
+        photo = null; // Use default or specific asset if needed
+      });
+      return;
+    }
     try {
       User? user = auth.currentUser;
       if (user != null) {
@@ -101,7 +113,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Text(
           message,
           style: GoogleFonts.poppins(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
         duration: const Duration(seconds: 3),
@@ -115,7 +129,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Text(
           message,
           style: GoogleFonts.poppins(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
         backgroundColor: ThemeColors.errorMessage,
         duration: const Duration(seconds: 3),
@@ -129,7 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Text(
           message,
           style: GoogleFonts.poppins(
-              fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSecondary),
         ),
         backgroundColor: ThemeColors.warningMessage,
         duration: const Duration(seconds: 3),
@@ -138,6 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void resetStates() {
+    if (kIsWeb) return;
     final DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     // LUCES
     // - Switch
@@ -172,8 +191,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //   builder: (context) => const Center(child: CircularProgressIndicator()),
     // );
     // Navigator.of(context).pop();
-    resetStates();
-    await FirebaseAuth.instance.signOut();
+    if (!kIsWeb) {
+      resetStates();
+      await FirebaseAuth.instance.signOut();
+    }
     // final prefs = await SharedPreferences.getInstance();
     // prefs.setBool("onboarding", true); // Establecer onboarding a true
     if (mounted) {
@@ -211,14 +232,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 size: 20,
               ),
               ThemeColors.delftBlue,
-              () async {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: ((context) => const MyApp())),
-                );
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setBool("onboarding", false);
-              },
+              kIsWeb
+                  ? null
+                  : () async {
+                      if (!kIsWeb) {
+                        await FirebaseAuth.instance.signOut();
+                      }
+                      if (context.mounted) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: ((context) => const MyApp())),
+                        );
+                      }
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setBool("onboarding", false);
+                    },
             ),
           ],
         ),
@@ -263,14 +291,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.all(8),
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
-                      child: Image.network(
-                        photo ??
-                            'https://firebasestorage.googleapis.com/v0/b/hometech-a45da.appspot.com/o/user_images%2Ficon1.png?alt=media&token=618d9980-4d45-42a6-b839-27834cf8af3e',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        alignment: const Alignment(0, 0),
-                      )),
+                      child: kIsWeb
+                          ? Container(
+                              color: Colors.blue,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'U',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 60,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : Image.network(
+                              photo ??
+                                  'https://firebasestorage.googleapis.com/v0/b/hometech-a45da.appspot.com/o/user_images%2Ficon1.png?alt=media&token=618d9980-4d45-42a6-b839-27834cf8af3e',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                              alignment: const Alignment(0, 0),
+                            )),
                 ),
               ),
             ),
@@ -330,7 +371,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],
@@ -459,7 +503,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],
@@ -515,7 +562,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],
@@ -544,20 +594,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Align(
                     alignment: const AlignmentDirectional(0.95, 0),
                     child: Switch(
-                      value: valswitch1,
+                      value: Provider.of<ThemeProvider>(context).themeData ==
+                          darkMode,
                       onChanged: (value) {
-                        // Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                        setState(() {
-                          valswitch1 = value;
-                          Provider.of<ThemeProvider>(context, listen: false)
-                              .toggleTheme();
-                        });
+                        Provider.of<ThemeProvider>(context, listen: false)
+                            .toggleTheme();
+                        // setState(() {
+                        //   valswitch1 = value;
+                        //   Provider.of<ThemeProvider>(context, listen: false)
+                        //       .toggleTheme();
+                        // });
                       },
-                      activeColor:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    activeTrackColor: Colors.indigo.shade400,
-                                    inactiveTrackColor: Colors.transparent,
-                                    inactiveThumbColor: Theme.of(context).colorScheme.onSecondary,
+                      activeColor: Theme.of(context).colorScheme.tertiary,
+                      activeTrackColor: Colors.indigo.shade400,
+                      inactiveTrackColor: Colors.transparent,
+                      inactiveThumbColor:
+                          Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                 ),
@@ -597,7 +649,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],
@@ -655,7 +710,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],
@@ -713,7 +771,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             boxShadow: [
               BoxShadow(
                 blurRadius: 2,
-                color: Colors.black.withOpacity(0.100),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer
+                    .withOpacity(0.1),
                 offset: const Offset(0, 5),
               ),
             ],

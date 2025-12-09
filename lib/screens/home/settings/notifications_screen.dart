@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hometech/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -10,7 +12,8 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final DatabaseReference _databaseReference = FirebaseDatabase.instance.ref();
+  // Getter to avoid eager initialization on Web
+  DatabaseReference get _databaseReference => FirebaseDatabase.instance.ref();
   bool switchT = false;
   bool switchG = false;
   bool switchSM = false;
@@ -112,8 +115,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       onChanged: (value) {
                         setState(() {
                           switchT = value;
+                          switchG = value;
+                          switchSM = value;
+                          switchSG = value;
+                          switchSP = value;
                         });
                         _notificationSwitch('Notifications/General', value);
+                        _notificationSwitch('Notifications/Garage', value);
+                        _notificationSwitch('Notifications/Movement', value);
+                        _notificationSwitch('Notifications/Gas', value);
+                        _notificationSwitch('Notifications/Proximity', value);
                       },
                       activeColor: Theme.of(context).colorScheme.tertiary,
                       activeTrackColor: Colors.indigo.shade400,
@@ -386,10 +397,33 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
+    if (!AppConfig.isDemoMode) {
+      _loadNotifications();
+    } else {
+      _loadPreferences();
+    }
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      switchT = prefs.getBool('Notifications/General') ?? false;
+      switchG = prefs.getBool('Notifications/Garage') ?? false;
+      switchSM = prefs.getBool('Notifications/Movement') ?? false;
+      switchSG = prefs.getBool('Notifications/Gas') ?? false;
+      switchSP = prefs.getBool('Notifications/Proximity') ?? false;
+    });
+  }
+
+  Future<void> _savePreference(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) {
+      prefs.setBool(key, value);
+    }
   }
 
   void _loadNotifications() {
+    // kIsWeb check removed as it is handled in initState
     _databaseReference.child('Notifications/General').onValue.listen(
       (event) {
         final bool stateNT = event.snapshot.value == true;
@@ -437,6 +471,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _notificationSwitch(String section, bool value) {
+    if (AppConfig.isDemoMode) {
+      _savePreference(section, value);
+      return;
+    }
     _databaseReference.child(section).set(value);
   }
 }
