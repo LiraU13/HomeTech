@@ -36,9 +36,9 @@ Try the interactive mobile preview directly in your browser:
 
 ## 📸 Screenshots
 
-|                         Dashboard (Dark)                          |                          Devices Control                          |                        Mobile Web Preview                         |
+|                         Home (Dark)                          |                          Devices Control (Dark)                         |                        Settings with Light Mode (Dark)                        |
 | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: |
-| <img src="assets/images/logo.png" width="200" alt="Placeholder"/> | <img src="assets/images/logo.png" width="200" alt="Placeholder"/> | <img src="assets/images/logo.png" width="200" alt="Placeholder"/> |
+| <img src="assets/images/Home.png" width="400" height="800" alt="Placeholder"/> | <img src="assets/images/Devices.png" width="400" height="800" alt="Placeholder"/> | <img src="assets/images/Settings with Light Mode.png" width="400" height="800" alt="Placeholder"/> |
 
 _(Screenshots to be added)_
 
