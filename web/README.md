@@ -36,11 +36,9 @@ Try the interactive mobile preview directly in your browser:
 
 ## 📸 Screenshots
 
-|                         Home (Dark)                          |                          Devices Control (Dark)                         |                        Settings with Light Mode (Dark)                        |
+|                         Home (Dark)                          |                          Devices Control (Dark)                         |                        Settings (Light)                        |
 | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :---------------------------------------------------------------: |
 | <img src="assets/images/Home.png" width="400" height="800" alt="Placeholder"/> | <img src="assets/images/Devices.png" width="400" height="800" alt="Placeholder"/> | <img src="assets/images/Settings with Light Mode.png" width="400" height="800" alt="Placeholder"/> |
-
-_(Screenshots to be added)_
 
 ## 🚀 Getting Started
 
